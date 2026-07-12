@@ -36,9 +36,9 @@ export const siteConfig: SiteConfig = {
         giscus: {
             enabled: true,
             repo: "fujadatorre/fujadatorre.github.io",
-            repoId: "R_kgDOTVv2VA",
+            repoId: "R_kgDOTVx6Xg",
             category: "Announcements",
-            categoryId: "DIC_kwDOTVv2VM4DBAVj",
+            categoryId: "DIC_kwDOTVx6Xs4DBAe2",
             mapping: "pathname",
             strict: "0",
             reactionsEnabled: "1",
