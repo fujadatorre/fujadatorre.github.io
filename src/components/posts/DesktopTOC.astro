@@ -1,0 +1,38 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+<aside class="hidden lg:block w-64 shrink-0">
+    <div class="sticky top-20 border border-border rounded-md p-5 bg-card/30 flex flex-col max-h-[calc(100vh-6rem)]">
+        <h3 class="text-xs uppercase tracking-widest font-semibold flex items-center gap-2 mb-4 text-primary shrink-0">
+            <span class="text-muted-foreground">#</span> //
+            SUMÁRIO
+        </h3>
+        <div class="overflow-y-auto pr-1 -mr-2 scrollbar-thin">
+            <ul class="flex flex-col gap-3 text-sm border-l border-border pl-0">
+                {headings.map((heading) => {
+                    const depthClasses = 
+                        heading.depth === 3 
+                            ? "pl-8 text-xs opacity-90" 
+                            : heading.depth === 4 
+                            ? "pl-12 text-[11px] opacity-75 italic" 
+                            : "pl-4";
+                    return (
+                        <li class="relative">
+                            <a
+                                href={`#${heading.slug}`}
+                                class={`text-muted-foreground hover:text-foreground transition-colors block ${depthClasses}`}
+                            >
+                                {heading.text}
+                            </a>
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    </div>
+</aside>

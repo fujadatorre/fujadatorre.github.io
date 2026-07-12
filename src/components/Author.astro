@@ -1,0 +1,183 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import { Github, Twitter, Linkedin, Mail } from "@lucide/astro";
+
+import Separator from "./ui/Separator.astro";
+import DecorativeKanji from "./about/DecorativeKanji.astro";
+import { siteConfig } from "@/config";
+
+import paleBlueDot from "../assets/images/palebluedot.jpg";
+import torreImage from "../assets/torre.png";
+
+const entries = await getCollection("post");
+
+let postsPerYear = 0;
+if (entries.length > 0) {
+    const years = entries.map((entry) => {
+        const [, , y] = entry.data.date.split("/");
+        return Number(y);
+    });
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const activeYears = Math.max(1, maxYear - minYear + 1);
+    postsPerYear = Math.ceil(entries.length / activeYears);
+}
+---
+
+<main class="page flex flex-col space-y-10">
+    <section class="relative flex flex-col items-start gap-4">
+        <span class="text-accent uppercase text-xs">// sobre o autor</span>
+        <div class="flex items-center gap-6">
+            <Image 
+                src={torreImage} 
+                alt="Wesley Gueta" 
+                class="w-16 h-16 rounded-full border border-border" 
+            />
+            <div>
+                <h1 class="text-5xl">Wesley Gueta</h1>
+                <p class="text-muted-foreground mt-1">Curioso pelo mundo e por descobrir o que ainda não conheço!</p>
+            </div>
+        </div>
+        
+        <p class="mt-4">
+            {siteConfig.author.bio}
+        </p>
+
+        <div class="flex items-center gap-4 mt-2">
+            {siteConfig.socials.github && (
+                <a
+                    href={siteConfig.socials.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="GitHub"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                >
+                    <Github size={20} />
+                </a>
+            )}
+            {siteConfig.socials.twitter && (
+                <a
+                    href={siteConfig.socials.twitter}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Twitter"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                >
+                    <Twitter size={20} />
+                </a>
+            )}
+            {siteConfig.socials.linkedin && (
+                <a
+                    href={siteConfig.socials.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="LinkedIn"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                >
+                    <Linkedin size={20} />
+                </a>
+            )}
+            <a
+                href="mailto:fujadatorre@protonmail.com"
+                aria-label="E-mail de Contato"
+                class="text-muted-foreground hover:text-primary transition-colors"
+            >
+                <Mail size={20} />
+            </a>
+        </div>
+
+        <span
+            class="text-secondary -z-1 opacity-70 text-[10rem] absolute -top-16 -left-4 disable-select"
+            aria-hidden="true">匠</span
+        >
+    </section>
+
+    <section
+        class="grid grid-cols-2 md:grid-cols-4 w-full border-l border-t border-border"
+    >
+        <DecorativeKanji title="5+" subTitle="Anos de Escrita" kanji="歴" />
+        <DecorativeKanji
+            title={entries.length.toString()}
+            subTitle="Publicações"
+            kanji="造"
+        />
+        <DecorativeKanji title="∞" subTitle="Curiosidade" kanji="杯" />
+        <DecorativeKanji
+            title={`~${postsPerYear || 1}`}
+            subTitle="Artigos / Ano"
+            kanji="筆"
+        />
+    </section>
+
+    <div class="w-full h-1 bg-foreground"></div>
+
+    <section>
+        <section class="flex justify-between">
+            <div class="size-5 border border-b-0 border-r-0 border-foreground">
+            </div>
+            <div
+                class="size-5 border border-b-0 border-r-0 border-foreground rotate-90"
+            >
+            </div>
+        </section>
+        <section class="px-5 space-y-6">
+            <p>
+                “O Sr. Wesley é, como dizem, apenas humano. Em outras palavras, uma forma de vida bípede baseada em carbono e descendente de primatas”, parafraseando o grande Douglas Adams em seu Guia do Mochileiro das Galáxias.
+            </p>
+            <p>
+                Ainda assim, resta muito a ser definido sobre minha identidade, embora eu aprecie essa simplificação literária e "científica". É uma abordagem que, no entanto, não abarca toda a complexidade da condição humana (ou mesmo de um único indivíduo), que engloba aspects sociais, emocionais, culturais e cognitivos essenciais para compreendermos a nós mesmos como seres humanos.
+            </p>
+            <p>
+                Contudo, impulsionado pela curiosidade insaciável de entender quem sou, esta pequena simplificação "científica" é o aspecto em que mais confio em relação à minha individualidade (que não é puramente individual).
+            </p>
+            <div class="flex flex-col md:flex-row gap-8 items-center md:items-start my-8">
+                <div class="flex-1 space-y-6">
+                    <p>
+                        Apesar das poucas certezas, posso dizer, de maneira feliz, que minha curiosidade é atravessada pelo mundo externo e modificada, para o bem ou para o mal, conforme as minhas experimentações, vivências e leituras. Essa constatação reflete-se em minha <a href="/linha-editorial" class="hover:text-primary transition-colors underline">iniciativa de criar este blog</a>, como uma forma de protestar contra a normalização do adoecimento da sociedade humana e de resistir à pressão para me conformar com os padrões de sanidade impostos por esta <a href="/posts/2026/sociedade/sociedade-do-cansaco-han" class="hover:text-primary transition-colors underline">sociedade do cansaço</a> e da transparência.
+                    </p>
+                    <p>
+                        Hoje, sinto que tenho muitas histórias para compartilhar, ouvidos atentos para escutar e ombros largos para apoiar, mesmo sendo apenas mais um entre os mais de <em>8 bilhões</em> de habitantes da Terra, que, como bem dito por Carl Sagan, “<strong><em>é um cenário muito pequeno numa vasta arena cósmica</em></strong>” e, enfatizando, que “<strong><em>é aqui, é a nossa casa, somos nós. Nela, todos a quem ama, todos a quem conhece, qualquer um sobre quem você ouviu falar, cada ser humano que já existiu, viveram as suas vidas</em></strong>”.
+                    </p>
+                </div>
+                <figure class="flex flex-col items-center shrink-0 w-full md:w-auto">
+                    <Image 
+                        src={paleBlueDot} 
+                        alt="Imagem Pálido Ponto Azul capturada pela Voyager 1" 
+                        class="w-full max-w-xs md:max-w-xs rounded-lg border border-border" 
+                    />
+                    <figcaption class="text-xs text-muted-foreground mt-2 max-w-xs text-center">
+                        <a href="https://pt.wikipedia.org/wiki/P%C3%A1lido_Ponto_Azul#Reflex%C3%B5es_de_Carl_Sagan" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors underline">
+                            Sagan indicou que nesse ponto, “cada ser humano que já existiu viveu a sua vida”.
+                        </a>
+                    </figcaption>
+                </figure>
+            </div>
+            <p>
+                Enquanto tenho noção da nossa <strong><em>‘pequinês’</em></strong> frente o Universo, sei da imensidão e importância de cada um de nós frente ao presente. Portanto, é agora que devemos nos empenhar em colocar todas forças para a construção do futuro que almejamos. Por conta disso, e como estou cansando da minha inércia frente a todos os problemas cotidianos, escrevo este blogue no ímpeto de provocar uma mudança qualquer a favor do que acredito ser certo, seja a nível individual ou comunitário.
+            </p>
+            <p>
+                Tenho interesse em uma variedade de áreas, desde as ciências físicas e sociais até as ciências médicas, bem como em tecnologia e seus impactos sociais, que estão intrinsecamente presentes em ambas as esferas. Além disso, identifico-me como <a href="/posts/2026/filosofia/humanismo-secular" class="hover:text-primary transition-colors underline">Humanista Secular</a>, sendo um agnóstico ateísta e adepto da filosofia de Software Livre (FLOSS).
+            </p>
+        </section>
+
+        <section class="flex justify-between mt-4">
+            <div
+                class="size-5 border border-b-0 border-r-0 border-foreground -rotate-90"
+            >
+            </div>
+            <div
+                class="size-5 border border-b-0 border-r-0 border-foreground rotate-180"
+            >
+            </div>
+        </section>
+    </section>
+
+    <div
+        class="flex items-center justify-center gap-4 text-muted-foreground text-sm pt-10 pb-4"
+    >
+        <div class="h-px w-full bg-foreground/10"></div>
+        <span class="whitespace-nowrap uppercase tracking-widest">FIM</span>
+        <div class="h-px w-full bg-foreground/10"></div>
+    </div>
+</main>

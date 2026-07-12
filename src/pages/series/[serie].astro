@@ -1,0 +1,94 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Badge from "@/components/ui/Badge.astro";
+import { siteConfig, seriesNames } from "@/config";
+import { calcReadTime } from "@/utils/reading-time";
+
+export async function getStaticPaths() {
+    const entries = await getCollection("post");
+    const posts = entries.filter((entry) => import.meta.env.DEV || !entry.data.draft);
+
+    const series = new Set<string>();
+    posts.forEach((post) => {
+        const parts = post.id.split("/");
+        if (parts.length > 2) {
+            const seriesKey = parts[1];
+            if (seriesNames[seriesKey]) {
+                series.add(seriesKey);
+            }
+        }
+    });
+
+    return [...series].map((serie) => ({
+        params: { serie },
+        props: { serie },
+    }));
+}
+
+const { serie } = Astro.props;
+
+const entries = await getCollection("post");
+const posts = entries
+    .filter((entry) => {
+        const parts = entry.id.split("/");
+        return (
+            (import.meta.env.DEV || !entry.data.draft) &&
+            parts.length > 2 &&
+            parts[1] === serie
+        );
+    })
+    .map((entry) => ({
+        id: entry.id,
+        slug: entry.id,
+        readTime: calcReadTime(entry.body ?? ""),
+        ...entry.data,
+    }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+---
+
+<Layout title={`Série: ${seriesNames[serie]} | ${siteConfig.title}`}>
+    <main class="page">
+        <div class="mb-10">
+            <a
+                href="/series"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+            >
+                <span>←</span> Todas as séries
+            </a>
+        </div>
+
+        <span class="uppercase text-primary font-medium tracking-widest"
+            >série</span
+        >
+        <h1 class="text-4xl mt-10">{seriesNames[serie]}</h1>
+        <p class="text-lg text-muted-foreground">
+            Esta série contém {posts.length} {posts.length === 1 ? "publicação estruturada" : "publicações estruturadas"}.
+        </p>
+
+        <section class="mt-20 flex flex-col gap-3">
+            {
+                posts.map((post) => (
+                    <section class="flex flex-col gap-2 group hover:bg-muted px-3 py-8 rounded-md transition-all duration-300">
+                        <div class="flex flex-col md:flex-row gap-2 md:justify-between md:items-start">
+                            <a href={`/posts/${post.slug}`}>
+                                <h2 class="text-2xl group-hover:text-primary leading-tight">
+                                    {post.title}
+                                </h2>
+                            </a>
+                            <span class="text-muted-foreground text-xs shrink-0 whitespace-nowrap md:mt-1 md:text-right text-left mt-1">
+                                {post.readTime} min de leitura
+                            </span>
+                        </div>
+                        <p class="text-muted-foreground">{post.frontmatter}</p>
+                        <section class="flex gap-2 flex-wrap">
+                            {post.tags.map((t) => (
+                                <Badge content={t} href={`/tags/${t}`} />
+                            ))}
+                        </section>
+                    </section>
+                ))
+            }
+        </section>
+    </main>
+</Layout>

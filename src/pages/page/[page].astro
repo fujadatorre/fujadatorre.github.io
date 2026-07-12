@@ -1,0 +1,26 @@
+---
+import { getCollection } from "astro:content";
+import Writing from "@/components/Writing.astro";
+import Layout from "@/layouts/Layout.astro";
+import { siteConfig } from "@/config";
+
+export async function getStaticPaths() {
+    const entries = await getCollection("post");
+    const postsCount = entries.filter((e) => import.meta.env.DEV || !e.data.draft).length;
+    const totalPages = Math.ceil(postsCount / siteConfig.postsPerPage);
+
+    return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({
+        params: { page: String(i + 2) },
+        props: { page: i + 2 },
+    }));
+}
+
+const { page } = Astro.props;
+---
+
+<Layout
+    title={`Publicações - Página ${page} | ${siteConfig.title}`}
+    image="/images/home.webp"
+>
+    <Writing page={page} isStandalone={true} />
+</Layout>

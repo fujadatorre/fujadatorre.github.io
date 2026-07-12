@@ -1,0 +1,138 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { siteConfig } from "@/config";
+---
+
+<Layout title={`Linha Editorial | ${siteConfig.title}`}>
+    <main class="page flex flex-col space-y-10">
+        <section class="relative flex flex-col items-start gap-4">
+            <span class="text-accent uppercase text-xs">// manifesto</span>
+            <h1 class="text-5xl">Linha Editorial</h1>
+            <p class="text-muted-foreground mt-1">
+                Apresentação dos princípios éticos, jornalísticos e comportamentais que guiam este blogue.
+            </p>
+        </section>
+
+        <div class="w-full h-1 bg-foreground"></div>
+
+        <article class="prose dark:prose-invert max-w-none space-y-6 text-foreground leading-relaxed">
+            <p>
+                Nesta página, será apresentada a linha editorial que este humilde blogue (<a href="/posts/2026/editorial/torre-de-marfim" class="hover:text-primary transition-colors underline">Derrubando da Torre de Marfim</a>) seguirá.
+            </p>
+            <p>
+                Este blog surge para abordar uma ampla gama de temas que alimentam meu interesse como ser humano em busca de aperfeiçoamento. Meu objetivo principal é contribuir para um debate público plural e fundamentado em evidências, e a divulgação da minha linha editorial é uma maneira de enfatizar a transparência e a clareza.
+            </p>
+
+            <h2 class="text-2xl font-bold mt-10 text-primary">Sobre os Princípios Éticos e Jornalísticos Norteadores</h2>
+            <p>
+                Embora o que eu pretenda fazer <strong>não seja um trabalho jornalístico</strong>, utilizarei os princípios de credibilidade e transparência como guia. Apresento os compromissos que seguirei:
+            </p>
+            <ol class="list-decimal pl-6 space-y-3">
+                <li>
+                    <strong>Compromisso com a correção dos fatos</strong>: se alguma informação fornecida não estiver mais em conformidade com as novas evidências ou se for identificado algum erro, comprometo-me a corrigir a informação e a assumir publicamente o equívoco.
+                </li>
+                <li>
+                    <strong>Compromisso com fontes confiáveis</strong>: não citarei nem compartilharei informações de fontes duvidosas ou desinformação (notícias falsas). Todo o conteúdo escrito ou compartilhado será verificado previamente, e assumo o compromisso de corrigi-lo.
+                </li>
+                <li>
+                    <strong>Sinalização entre fato, análise e opinião</strong>: deixarei clara a diferença ao apresentar uma notícia factual, uma análise de cenário ou uma opinião pessoal do autor.
+                </li>
+                <li>
+                    <strong>Descompromisso total com o plágio</strong>: indicarei rigorosamente as referências utilizadas para a construção da minha argumentação. Em caso de textos não autorais reproduzidos, indicarei a autoria e pedirei autorização expressa se aplicável.
+                </li>
+            </ol>
+
+            <h2 class="text-2xl font-bold mt-10 text-primary">Sobre as Publicações</h2>
+            <p>
+                As publicações cobrirão temas diversos sob as seguintes frentes:
+            </p>
+            <ol class="list-decimal pl-6 space-y-3">
+                <li>
+                    <strong>Difusão científica e tecnológica (ênfase em cultura científica)</strong>: visa alcançar o público geral para apresentar discussões e conceitos acadêmicos com rigor, mas de forma acessível e com viés crítico sobre os impactos sociais da tecnologia.
+                </li>
+                <li>
+                    <strong>Difusão científica com ênfase em atualidades</strong>: debate público e político baseado em evidências, tentando trazer uma voz diferente da manada, mantendo o rigor metodológico mínimo.
+                </li>
+                <li>
+                    <strong>Temas diversos e crônicas</strong>: sem obrigação de uniformidade de tópicos, incluindo citações de leituras, indicações de filmes, crônicas sobre o cotidiano e reflexões diárias sobre a vida plena em sociedade.
+                </li>
+                <li>
+                    <strong>Comentários de opinião</strong>: análises pontuais sobre temas da atualidade quando considerar relevante ou necessário oferecer uma ótica diferenciada.
+                </li>
+            </ol>
+
+            <h2 class="text-2xl font-bold mt-10 text-primary">Sobre as Influências e Tendências Políticas</h2>
+            <p>
+                Para reduzir a distância entre o conhecimento especializado e o senso comum, e visando manter a transparência das opiniões expressadas, destaco alguns dos princípios fundamentais e posições que orientam minha visão de mundo:
+            </p>
+            <ol class="list-decimal pl-6 space-y-3">
+                <li>
+                    <a href="/posts/2026/filosofia/humanismo-secular" class="hover:text-primary transition-colors underline"><strong>Humanismo Secular</strong></a>:
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                        <li>
+                            <strong>Razão, Ciência e Tecnologia</strong>: a razão aliada ao método científico constitui a ferramenta fundamental para compreender o universo. Como diria Carl Sagan, <em>“alegações extraordinárias demandam evidências extraordinárias”</em>.
+                        </li>
+                        <li>
+                            <strong>Separação de Estado e Igreja</strong>: a sociedade democrática deve preservar a laicidade do Estado, garantindo a proteção dos direitos humanos de minorias contra imposições confessionais repressivas.
+                        </li>
+                        <li>
+                            <strong>Educação Pública Científica e Moral</strong>: defesa da educação pública universal e científica para propiciar a formação crítica, moral e cidadã do indivíduo, focando no combate às desigualdades.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Independência Partidária</strong>: não sou filiado a partidos políticos e pretendo manter meu discurso independente.
+                </li>
+                <li>
+                    <strong>Posicionamento Social e Econômico</strong>:
+                    <ul class="list-disc pl-6 mt-2 space-y-2">
+                        <li>
+                            A educação deve ser 100% pública e de qualidade para todos.
+                        </li>
+                        <li>
+                            Combate à desigualdade econômica por razões éticas. Defesa de padrões de consumo ambientalmente sustentáveis.
+                        </li>
+                        <li>
+                            Forte papel indutor do Estado em ciência, tecnologia e soberania nacional.
+                        </li>
+                        <li>
+                            Combate ativo ao racismo estrutural através de políticas afirmativas (como as cotas).
+                        </li>
+                        <li>
+                            Defendo o movimento feminista e LGBTQIA+.
+                        </li>
+                        <li>
+                            Compromisso ético de tomar posição diante de situações de injustiça.
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h2 class="text-2xl font-bold mt-10 text-primary">Sobre as Regras de Comportamento e Comentários</h2>
+            <p>
+                Os comentários e o debate saudável são incentivados. No entanto, todos passam por moderação prévia. Serão sumariamente descartados:
+            </p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>
+                    Spams e mensagens puramente comerciais/promocionais.
+                </li>
+                <li>
+                    Mensagens com palavrões, ataques pessoais (ad hominem) ou tentativas de importunação de outros leitores.
+                </li>
+                <li>
+                    Manifestações contendo linguagem abusiva, preconceituosa, difamatória, violenta ou discursos de ódio.
+                </li>
+                <li>
+                    Comentários anônimos (só serão validados os que contarem com identificação real).
+                </li>
+                <li>
+                    Tentativas de propagação de desinformação/notícias falsas (estas receberão réplicas apontando o erro e a checagem, caso haja tempo hábil).
+                </li>
+            </ul>
+
+            <p class="text-sm text-muted-foreground italic mt-12 pt-6 border-t border-border">
+                Esta linha editorial é inspirada nas diretrizes do Jornal Nexo e do economista Thomas Conti. Encontra-se sob atualização permanente (última alteração em 08 de abril de 2024).
+            </p>
+        </article>
+    </main>
+</Layout>

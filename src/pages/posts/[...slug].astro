@@ -1,0 +1,444 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Tooltip from "@/components/ui/Tooltip.astro";
+import MobileTOC from "@/components/posts/MobileTOC.astro";
+import DesktopTOC from "@/components/posts/DesktopTOC.astro";
+import ShareButtons from "@/components/posts/ShareButtons.astro";
+import { Image } from "astro:assets";
+import { siteConfig } from "@/config";
+import Comments from "@/components/Comments.astro";
+import { parseDate } from "@/utils/date";
+import { calcReadTime } from "@/utils/reading-time";
+
+export async function getStaticPaths() {
+    const allPosts = await getCollection("post");
+    const posts = allPosts
+        .filter((p) => import.meta.env.DEV || !p.data.draft)
+        .sort((a, b) => {
+            return (
+                parseDate(b.data.date).getTime() -
+                parseDate(a.data.date).getTime()
+            );
+        });
+
+    return posts.map((post, index) => ({
+        params: { slug: post.id },
+        props: {
+            post,
+            prevPost:
+                index < posts.length - 1
+                    ? {
+                          id: posts[index + 1].id,
+                          title: posts[index + 1].data.title,
+                      }
+                    : null,
+            nextPost:
+                index > 0
+                    ? {
+                          id: posts[index - 1].id,
+                          title: posts[index - 1].data.title,
+                      }
+                    : null,
+        },
+    }));
+}
+
+const { post, prevPost, nextPost } = Astro.props;
+const { Content, headings } = await render(post);
+
+const readTime = calcReadTime(post.body!);
+
+const dateObj = parseDate(post.data.date);
+const dateFormatted = dateObj.toLocaleDateString("pt-br", {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+});
+const isoDate = dateObj.toISOString();
+
+let updatedDateFormatted: string | null = null;
+if (post.data.updatedDate) {
+    const updatedObj = parseDate(post.data.updatedDate);
+    updatedDateFormatted = updatedObj.toLocaleDateString("pt-br", {
+        timeZone: "UTC",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+}
+
+const ogImage = post.data.image?.src;
+const postUrl = new URL(
+    Astro.url.pathname,
+    Astro.site || Astro.url.origin,
+).href;
+
+const allEntries = await getCollection("post");
+const relatedPosts = allEntries
+    .filter((p) => !p.data.draft && p.id !== post.id)
+    .map((p) => ({
+        id: p.id,
+        title: p.data.title,
+        frontmatter: p.data.frontmatter,
+        tags: p.data.tags,
+        readTime: calcReadTime(p.body!),
+        sharedTags: p.data.tags.filter((t) => post.data.tags.includes(t))
+            .length,
+    }))
+    .filter((p) => p.sharedTags > 0)
+    .sort((a, b) => b.sharedTags - a.sharedTags)
+    .slice(0, 3);
+---
+
+<Layout
+    title={`${post.data.title} | ${siteConfig.title}`}
+    description={post.data.frontmatter}
+    type="article"
+    image={ogImage}
+>
+    <div class="fixed top-0 left-0 w-full z-50 bg-transparent">
+        <div
+            id="progress-bar"
+            class="h-0.75 bg-primary transition-all duration-150 ease-out"
+            style="width: 0%"
+        >
+        </div>
+    </div>
+    <main class="page pb-20 mt-10 relative">
+        <div class="mb-10 w-full">
+            <a
+                href="/"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+            >
+                <span>←</span> Voltar para as publicações
+            </a>
+        </div>
+
+        <article class="w-full max-w-full">
+            <header class="mb-14 lg:mb-20">
+                <h1
+                    class="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight mb-6 text-foreground leading-tight"
+                >
+                    {post.data.title}
+                </h1>
+                <div
+                    class="flex items-center gap-2 text-sm text-muted-foreground mb-4 flex-wrap"
+                >
+                    <time datetime={isoDate}>{dateFormatted}</time>
+                    {
+                        updatedDateFormatted && (
+                            <>
+                                <span>·</span>
+                                <span class="italic">
+                                    Atualizado em {updatedDateFormatted}
+                                </span>
+                            </>
+                        )
+                    }
+                    <span>·</span>
+                    <span>{readTime} min de leitura</span>
+                    <span>·</span>
+                    <div class="flex gap-2 flex-wrap">
+                        {
+                            post.data.tags.map((tag: string) => (
+                                <Badge
+                                    content={tag}
+                                    href={`/tags/${tag}`}
+                                />
+                            ))
+                        }
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <ShareButtons url={postUrl} title={post.data.title} />
+                </div>
+                {
+                    post.data.image && (
+                        <Image
+                            src={post.data.image}
+                            alt={post.data.title}
+                            class="w-full h-auto rounded-xl mt-8 object-cover aspect-video border border-border"
+                            loading="eager"
+                            fetchpriority="high"
+                        />
+                    )
+                }
+            </header>
+        </article>
+
+        <div class="flex flex-col lg:flex-row gap-10 relative">
+            <div class="flex-1 w-full max-w-full">
+                <div class="prose-blog">
+                    <div class="drop-cap">
+                        <Content components={{ Tooltip }} />
+                    </div>
+                </div>
+            </div>
+
+            {headings.length > 0 && <DesktopTOC headings={headings} />}
+        </div>
+
+        <div class="mt-16 pt-8 border-t border-border">
+            <span
+                class="text-xs uppercase tracking-widest text-muted-foreground mb-4 block"
+                >Compartilhar publicação</span
+            >
+            <ShareButtons url={postUrl} title={post.data.title} />
+        </div>
+
+        {
+            relatedPosts.length > 0 && (
+                <div class="mt-16">
+                    <span class="text-xs uppercase tracking-widest text-muted-foreground mb-6 block">
+                        Publicações relacionadas
+                    </span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {relatedPosts.map((related) => (
+                            <a
+                                href={`/posts/${related.id}`}
+                                class="group p-4 border border-border rounded-lg hover:bg-muted transition-colors"
+                            >
+                                <h3 class="font-medium group-hover:text-primary transition-colors line-clamp-2">
+                                    {related.title}
+                                </h3>
+                                <p class="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                    {related.frontmatter}
+                                </p>
+                                <span class="text-xs text-muted-foreground mt-2 block">
+                                    {related.readTime} min de leitura
+                                </span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+
+        <Comments />
+
+        <nav class="mt-16 pt-8 border-t border-border grid grid-cols-2 gap-4">
+            <div>
+                {
+                    prevPost && (
+                        <a
+                            href={`/posts/${prevPost.id}`}
+                            class="group flex flex-col gap-1"
+                        >
+                            <span class="text-xs text-muted-foreground">
+                                ← Anterior
+                            </span>
+                            <span class="text-sm font-medium group-hover:text-primary transition-colors line-clamp-1">
+                                {prevPost.title}
+                            </span>
+                        </a>
+                    )
+                }
+            </div>
+            <div class="text-right">
+                {
+                    nextPost && (
+                        <a
+                            href={`/posts/${nextPost.id}`}
+                            class="group flex flex-col gap-1 items-end"
+                        >
+                            <span class="text-xs text-muted-foreground">
+                                Próximo →
+                            </span>
+                            <span class="text-sm font-medium group-hover:text-primary transition-colors line-clamp-1">
+                                {nextPost.title}
+                            </span>
+                        </a>
+                    )
+                }
+            </div>
+        </nav>
+
+        <div class="mt-10 flex justify-center">
+            <a
+                href="/"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+            >
+                ← Voltar para as publicações
+            </a>
+        </div>
+    </main>
+
+    {headings.length > 0 && <MobileTOC headings={headings} />}
+    <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.data.title,
+            image: ogImage
+                ? new URL(ogImage, Astro.site || Astro.url.origin).href
+                : undefined,
+            author: {
+                "@type": "Person",
+                name: siteConfig.author.name,
+            },
+            datePublished: isoDate,
+            description: post.data.frontmatter,
+            url: Astro.site
+                ? new URL(Astro.url.pathname, Astro.site).href
+                : Astro.url.href,
+        })}
+    />
+
+    <script is:inline>
+        let onScroll = null;
+
+        document.addEventListener(
+            "astro:before-swap",
+            () => {
+                if (onScroll) {
+                    window.removeEventListener("scroll", onScroll);
+                    onScroll = null;
+                }
+            },
+            { once: true },
+        );
+
+        document.addEventListener("astro:page-load", () => {
+            const headers = Array.from(document.querySelectorAll(".prose-blog h2, .prose-blog h3, .prose-blog h4"));
+            const activeLiClasses = [
+                "border-l-2",
+                "border-primary",
+                "-ml-[1px]",
+            ];
+            const activeLinkClasses = ["text-foreground", "font-medium"];
+            let lastActiveId = null;
+
+            const updateActiveTOC = () => {
+                const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+                const offset = 140; // altura da navbar + folga de conforto
+
+                // Se chegou ao fim da página, o item ativo é o último
+                const isAtBottom = window.innerHeight + scrollPosition >= document.documentElement.scrollHeight - 20;
+
+                let activeHeader = null;
+                if (isAtBottom && headers.length > 0) {
+                    activeHeader = headers[headers.length - 1];
+                } else {
+                    for (let i = 0; i < headers.length; i++) {
+                        const header = headers[i];
+                        const headerTop = header.getBoundingClientRect().top + scrollPosition;
+                        if (scrollPosition + offset >= headerTop) {
+                            activeHeader = header;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                const activeId = activeHeader ? activeHeader.getAttribute("id") : null;
+
+                if (activeId === lastActiveId) return;
+                lastActiveId = activeId;
+
+                // Limpar destaques de todos os itens
+                document.querySelectorAll("aside li, #mobile-toc-menu li").forEach((el) => {
+                    el.classList.remove(...activeLiClasses);
+                    const a = el.querySelector("a");
+                    if (a) {
+                        a.classList.remove(...activeLinkClasses);
+                        a.classList.add("text-muted-foreground");
+                    }
+                });
+
+                if (activeId) {
+                    // Busca segura de links decodificando URLs para evitar problemas com caracteres acentuados
+                    const findLink = (selector) => {
+                        return Array.from(document.querySelectorAll(selector)).find(a => {
+                            const href = a.getAttribute("href");
+                            if (!href) return false;
+                            try {
+                                return href === `#${activeId}` || decodeURIComponent(href) === `#${activeId}`;
+                            } catch (e) {
+                                return href === `#${activeId}`;
+                            }
+                        });
+                    };
+
+                    const desktopLink = findLink("aside a");
+                    const mobileLink = findLink("#mobile-toc-menu a");
+
+                    if (desktopLink) {
+                        const asideLi = desktopLink.parentElement;
+                        asideLi.classList.add(...activeLiClasses);
+                        desktopLink.classList.add(...activeLinkClasses);
+                        desktopLink.classList.remove("text-muted-foreground");
+
+                        // Rolar o contêiner para manter o link ativo visível
+                        const container = desktopLink.closest('.overflow-y-auto');
+                        if (container) {
+                            const containerRect = container.getBoundingClientRect();
+                            const elemRect = desktopLink.getBoundingClientRect();
+                            const relativeTop = elemRect.top - containerRect.top + container.scrollTop;
+                            const relativeBottom = relativeTop + elemRect.height;
+                            const containerTop = container.scrollTop;
+                            const containerBottom = containerTop + container.clientHeight;
+
+                            if (relativeTop < containerTop) {
+                                container.scrollTo({ top: relativeTop - 16, behavior: "smooth" });
+                            } else if (relativeBottom > containerBottom) {
+                                container.scrollTo({ top: relativeBottom - container.clientHeight + 16, behavior: "smooth" });
+                            }
+                        }
+                    }
+
+                    if (mobileLink) {
+                        const mobileLi = mobileLink.parentElement;
+                        mobileLi.classList.add(...activeLiClasses);
+                        mobileLink.classList.add(...activeLinkClasses);
+                        mobileLink.classList.remove("text-muted-foreground");
+
+                        // Rolar o contêiner para manter o link ativo visível
+                        const container = mobileLink.closest('.overflow-y-auto');
+                        if (container) {
+                            const containerRect = container.getBoundingClientRect();
+                            const elemRect = mobileLink.getBoundingClientRect();
+                            const relativeTop = elemRect.top - containerRect.top + container.scrollTop;
+                            const relativeBottom = relativeTop + elemRect.height;
+                            const containerTop = container.scrollTop;
+                            const containerBottom = containerTop + container.clientHeight;
+
+                            if (relativeTop < containerTop) {
+                                container.scrollTo({ top: relativeTop - 16, behavior: "smooth" });
+                            } else if (relativeBottom > containerBottom) {
+                                container.scrollTo({ top: relativeBottom - container.clientHeight + 16, behavior: "smooth" });
+                            }
+                        }
+                    }
+                }
+            };
+
+            onScroll = () => {
+                // 1. Atualizar barra de progresso
+                const winScroll =
+                    document.body.scrollTop ||
+                    document.documentElement.scrollTop;
+                const height =
+                    document.documentElement.scrollHeight -
+                    document.documentElement.clientHeight;
+                const scrolled = height <= 0 ? 100 : (winScroll / height) * 100;
+                const progressBar = document.getElementById("progress-bar");
+                if (progressBar) {
+                    progressBar.style.width = scrolled + "%";
+                }
+
+                // 2. Atualizar item ativo do TOC
+                updateActiveTOC();
+            };
+
+            window.addEventListener("scroll", onScroll);
+            
+            // Executa uma vez no início caso a página já tenha carregado rolada
+            updateActiveTOC();
+        });
+    </script>
+</Layout>

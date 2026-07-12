@@ -1,0 +1,14 @@
+---
+// src/components/ui/Tooltip.astro
+interface Props {
+    text: string;
+}
+const { text } = Astro.props;
+---
+<span class="group relative inline-block cursor-help border-b border-dashed border-primary/50 hover:text-primary transition-colors duration-200">
+    <slot />
+    <span class="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2.5 w-64 -translate-x-1/2 scale-95 rounded-lg bg-neutral-900 text-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-800 dark:border-neutral-700 px-3 py-2 text-[11px] sm:text-xs font-normal opacity-0 shadow-2xl transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 whitespace-normal leading-relaxed text-center break-words select-none">
+        {text}
+        <span class="absolute top-full left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1 bg-neutral-900 dark:bg-neutral-800 border-r border-b border-neutral-800 dark:border-neutral-700 rotate-45"></span>
+    </span>
+</span>

@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import { siteConfig, seriesNames } from "@/config";
+
+const entries = await getCollection("post");
+const posts = entries.filter((entry) => import.meta.env.DEV || !entry.data.draft);
+
+const seriesCounts = new Map<string, number>();
+posts.forEach((post) => {
+    const parts = post.id.split("/");
+    if (parts.length > 2) {
+        const seriesKey = parts[1];
+        if (seriesNames[seriesKey]) {
+            seriesCounts.set(seriesKey, (seriesCounts.get(seriesKey) || 0) + 1);
+        }
+    }
+});
+
+const sortedSeries = [...seriesCounts.entries()].sort((a, b) => {
+    return seriesNames[a[0]].localeCompare(seriesNames[b[0]], "pt-BR");
+});
+---
+
+<Layout title={`Séries | ${siteConfig.title}`}>
+    <main class="page">
+        <div class="mb-10">
+            <a
+                href="/"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+            >
+                <span>←</span> Voltar para as publicações
+            </a>
+        </div>
+
+        <span class="uppercase text-primary font-medium tracking-widest"
+            >navegar</span
+        >
+
+        <h1 class="text-4xl mt-10">Séries de Publicações</h1>
+        <p class="text-lg max-w-122 text-muted-foreground">
+            Explore nossas séries temáticas de artigos estruturados e sequenciais.
+        </p>
+
+        <section class="mt-20 flex flex-col gap-4">
+            {
+                sortedSeries.map(([seriesKey, count]) => (
+                    <a
+                        href={`/series/${seriesKey}`}
+                        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/40 dark:bg-neutral-900/40 hover:bg-primary/5 px-6 py-5 rounded-xl border border-neutral-200/60 dark:border-neutral-800/60 hover:border-primary/20 transition-all duration-300 shadow-sm"
+                    >
+                        <div class="flex-1">
+                            <h2 class="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors leading-tight">
+                                {seriesNames[seriesKey]}
+                            </h2>
+                            <p class="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                Série especial de publicações organizadas sobre {seriesNames[seriesKey].toLowerCase()}.
+                            </p>
+                        </div>
+                        <span class="self-start sm:self-center text-xs font-semibold bg-primary/10 text-primary px-3 py-1.5 rounded-full shrink-0">
+                            {count} {count === 1 ? "artigo" : "artigos"}
+                        </span>
+                    </a>
+                ))
+            }
+        </section>
+    </main>
+</Layout>

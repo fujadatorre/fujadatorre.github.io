@@ -1,0 +1,83 @@
+---
+interface Props {
+    url: string;
+    title: string;
+}
+
+const { url, title } = Astro.props;
+
+const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+---
+
+<div class="flex items-center gap-3 flex-wrap">
+    <button
+        data-share-url={url}
+        class="share-copy-btn text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
+    >
+        <svg
+            class="size-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path
+                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            ></path>
+            <path
+                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            ></path>
+        </svg>
+        <span class="share-copy-text">Copy link</span>
+    </button>
+    <a
+        href={`mailto:fujadatorre@protonmail.com?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`}
+        target="_blank"
+        rel="noreferrer"
+        class="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-1.5"
+        aria-label="Compartilhar por e‑mail"
+    >
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8l-4 4-4-4z"/>
+        </svg>
+        Email
+    </a>
+</div>
+
+<script>
+    let copyHandlers: { btn: HTMLElement; handler: () => void }[] = [];
+
+    document.addEventListener("astro:before-swap", () => {
+        copyHandlers.forEach(({ btn, handler }) => {
+            btn.removeEventListener("click", handler);
+        });
+        copyHandlers = [];
+    });
+
+    document.addEventListener("astro:page-load", () => {
+        const buttons =
+            document.querySelectorAll<HTMLButtonElement>(".share-copy-btn");
+        buttons.forEach((btn) => {
+            const url = btn.getAttribute("data-share-url");
+            if (!url) return;
+
+            const handler = () => {
+                navigator.clipboard.writeText(url).then(() => {
+                    const textEl = btn.querySelector(".share-copy-text");
+                    if (textEl) {
+                        textEl.textContent = "Copied!";
+                        setTimeout(() => {
+                            textEl.textContent = "Copy link";
+                        }, 2000);
+                    }
+                });
+            };
+
+            btn.addEventListener("click", handler);
+            copyHandlers.push({ btn, handler });
+        });
+    });
+</script>

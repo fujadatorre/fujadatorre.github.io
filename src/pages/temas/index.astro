@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import { siteConfig, themeNames } from "@/config";
+
+const entries = await getCollection("post");
+const posts = entries.filter((entry) => import.meta.env.DEV || !entry.data.draft);
+
+const themeCounts = new Map<string, number>();
+posts.forEach((post) => {
+    const parts = post.id.split("/");
+    if (parts.length > 2) {
+        const themeKey = parts[1];
+        if (themeNames[themeKey]) {
+            themeCounts.set(themeKey, (themeCounts.get(themeKey) || 0) + 1);
+        }
+    }
+});
+
+const sortedThemes = [...themeCounts.entries()].sort((a, b) => {
+    return themeNames[a[0]].localeCompare(themeNames[b[0]], "pt-BR");
+});
+---
+
+<Layout title={`Temas | ${siteConfig.title}`}>
+    <main class="page">
+        <div class="mb-10">
+            <a
+                href="/"
+                class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+            >
+                <span>←</span> Voltar para as publicações
+            </a>
+        </div>
+
+        <span class="uppercase text-primary font-medium tracking-widest"
+            >navegar</span
+        >
+
+        <h1 class="text-4xl mt-10">Temas</h1>
+        <p class="text-lg max-w-122 text-muted-foreground">
+            Explore publicações organizadas pelas linhas editoriais e de pesquisa.
+        </p>
+
+        <section class="mt-20 flex flex-col gap-4">
+            {
+                sortedThemes.map(([themeKey, count]) => (
+                    <a
+                        href={`/temas/${themeKey}`}
+                        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/40 dark:bg-neutral-900/40 hover:bg-primary/5 px-6 py-5 rounded-xl border border-neutral-200/60 dark:border-neutral-800/60 hover:border-primary/20 transition-all duration-300 shadow-sm"
+                    >
+                        <div class="flex-1">
+                            <h2 class="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors leading-tight">
+                                {themeNames[themeKey]}
+                            </h2>
+                            <p class="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                Explore publicações classificadas sob a linha editorial de {themeNames[themeKey].toLowerCase()}.
+                            </p>
+                        </div>
+                        <span class="self-start sm:self-center text-xs font-semibold bg-primary/10 text-primary px-3 py-1.5 rounded-full shrink-0">
+                            {count} {count === 1 ? "publicação" : "publicações"}
+                        </span>
+                    </a>
+                ))
+            }
+        </section>
+    </main>
+</Layout>
