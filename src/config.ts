@@ -63,5 +63,17 @@ export const themeNames: Record<string, string> = {
 };
 
 export const seriesNames: Record<string, string> = {
-    "serie-mudancas-climaticas": "Mudanças Climáticas, Consenso e Resistência"
+    "serie-mudancas-climaticas": "Mudanças Climáticas, Consenso e Resistência",
+    "evolucao-conceitos-fisica": "A invenção da realidade: a longa história das revoluções da física",
+    "praticas-sociais-educativas": "Muros, celulares e giz: a física nas trincheiras da escola pública",
+    "educacao-ciencia-matematica": "O universo privado: a persistência dos nossos erros sobre o cosmo",
+    "filosofia": "Contra o manual: as engrenagens por trás da \"verdade científica\""
+};
+
+export const seriesDescriptions: Record<string, string> = {
+    "serie-mudancas-climaticas": "Uma investigação sobre a história da ciência do clima, as evidências do impacto humano, a fabricação da dúvida e o papel do ensino diante do negacionismo.",
+    "evolucao-conceitos-fisica": "Uma jornada histórica pelos conceitos fundamentais da física, desde o cosmo teleológico de Aristóteles até a mecânica quântica e as partículas elementares.",
+    "praticas-sociais-educativas": "Relatos reflexivos sobre a realidade das salas de aula no ensino médio técnico, analisando políticas educacionais, dinâmicas sociais e desafios pedagógicos.",
+    "educacao-ciencia-matematica": "Uma análise sobre as concepções errôneas em astronomia básica e como as distorções nos livros didáticos dificultam a compreensão científica do céu.",
+    "filosofia": "Uma desconstrução do mito da ciência como receita infalível, explorando os limites lógicos do indutivismo, o papel da falseabilidade e as revoluções nos paradigmas científicos."
 };

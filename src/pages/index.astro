@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Writing from "@/components/Writing.astro";
-import { siteConfig, seriesNames } from "@/config";
+import { siteConfig, seriesNames, seriesDescriptions } from "@/config";
 import { Image } from "astro:assets";
 import torreImage from "../assets/torre.png";
 import { Github, Twitter, Linkedin, BookOpen } from "@lucide/astro";
@@ -15,13 +15,25 @@ const seriesCounts = new Map<string, number>();
 posts.forEach((post) => {
     const parts = post.id.split("/");
     if (parts.length > 2) {
-        const seriesKey = parts[1];
-        if (seriesNames[seriesKey]) {
+        let seriesKey: string | undefined = undefined;
+        if (parts[1] === "series") {
+            seriesKey = parts[2];
+        }
+        if (seriesKey && seriesNames[seriesKey]) {
             seriesCounts.set(seriesKey, (seriesCounts.get(seriesKey) || 0) + 1);
         }
     }
 });
-const activeSeries = [...seriesCounts.entries()];
+const allowedSeriesKeys = [
+    "serie-mudancas-climaticas",
+    "evolucao-conceitos-fisica",
+    "educacao-ciencia-matematica",
+    "filosofia",
+    "praticas-sociais-educativas"
+];
+const activeSeries = allowedSeriesKeys
+    .map((key) => [key, seriesCounts.get(key) || 0] as [string, number])
+    .filter(([_, count]) => count > 0);
 
 // 2. Obter Tags
 const tagCounts = new Map<string, number>();
@@ -117,7 +129,7 @@ const sortedTags = [...tagCounts.entries()]
             <section class="flex flex-col space-y-6">
                 <div>
                     <span class="text-xs uppercase text-primary font-medium tracking-widest">SÉRIES ESPECIAIS</span>
-                    <h2 class="text-3xl font-bold mt-2">Séries de Artigos</h2>
+                    <h2 class="text-3xl font-bold mt-2">Séries de artigos</h2>
                     <p class="text-sm text-muted-foreground mt-1">Explorações encadeadas e aprofundadas sobre temáticas centrais.</p>
                 </div>
                 <div class="grid grid-cols-1 gap-4">
@@ -131,7 +143,7 @@ const sortedTags = [...tagCounts.entries()]
                                     {seriesNames[seriesKey]}
                                 </h3>
                                 <p class="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                                    Série de artigos dedicados a desmistificar a realidade sobre {seriesNames[seriesKey].toLowerCase()}.
+                                    {seriesDescriptions[seriesKey]}
                                 </p>
                             </div>
                             <span class="self-start sm:self-center text-xs font-semibold bg-primary/10 text-primary px-3 py-1.5 rounded-full shrink-0">
@@ -139,6 +151,14 @@ const sortedTags = [...tagCounts.entries()]
                             </span>
                         </a>
                     ))}
+                </div>
+                <div class="flex justify-end mt-2">
+                    <a
+                        href="/series"
+                        class="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                    >
+                        Ver todas as séries →
+                    </a>
                 </div>
             </section>
         )}

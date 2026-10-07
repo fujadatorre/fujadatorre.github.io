@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Badge from "@/components/ui/Badge.astro";
-import { siteConfig, seriesNames } from "@/config";
+import { siteConfig, seriesNames, seriesDescriptions } from "@/config";
 import { calcReadTime } from "@/utils/reading-time";
 
 export async function getStaticPaths() {
@@ -13,8 +13,11 @@ export async function getStaticPaths() {
     posts.forEach((post) => {
         const parts = post.id.split("/");
         if (parts.length > 2) {
-            const seriesKey = parts[1];
-            if (seriesNames[seriesKey]) {
+            let seriesKey: string | undefined = undefined;
+            if (parts[1] === "series") {
+                seriesKey = parts[2];
+            }
+            if (seriesKey && seriesNames[seriesKey]) {
                 series.add(seriesKey);
             }
         }
@@ -32,10 +35,14 @@ const entries = await getCollection("post");
 const posts = entries
     .filter((entry) => {
         const parts = entry.id.split("/");
+        let seriesKey: string | undefined = undefined;
+        if (parts[1] === "series") {
+            seriesKey = parts[2];
+        }
         return (
             (import.meta.env.DEV || !entry.data.draft) &&
             parts.length > 2 &&
-            parts[1] === serie
+            seriesKey === serie
         );
     })
     .map((entry) => ({
@@ -62,7 +69,10 @@ const posts = entries
             >série</span
         >
         <h1 class="text-4xl mt-10">{seriesNames[serie]}</h1>
-        <p class="text-lg text-muted-foreground">
+        <p class="text-lg text-muted-foreground mt-2">
+            {seriesDescriptions[serie]}
+        </p>
+        <p class="text-sm text-muted-foreground/80 mt-1">
             Esta série contém {posts.length} {posts.length === 1 ? "publicação estruturada" : "publicações estruturadas"}.
         </p>
 
