@@ -57,6 +57,7 @@ export const themeNames: Record<string, string> = {
     "sociedade": "Sociedade",
     "comunicacao": "Comunicação e Linguagem",
     "programacao": "Programação e Tecnologia",
+    "eletronica-sistemas-embarcados": "Eletrônica e sistemas embarcados",
     "vida-pratica": "Vida Prática e Bem-Estar",
     "exemplos": "Exemplos e Componentes"
 };
